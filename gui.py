@@ -1,8 +1,8 @@
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QWindow
 from PyQt5.QtWidgets import *
 import sys
-
 
 class UI_MainWindow(QMainWindow):
     def __init__(self):
@@ -23,7 +23,6 @@ class TabWidgets(QWidget):
     def __init__(self):
         super(TabWidgets, self).__init__()
         self.layout = QVBoxLayout(self)
-
         # Init tab screen
         self.tabs = QTabWidget()
         self.tab1 = QWidget()
@@ -41,10 +40,9 @@ class TabWidgets(QWidget):
         self.tabs.addTab(self.tab5,"Finalize")
 
         # Create first tab
-        self.tab1.layout = QVBoxLayout(self)
-        self.l = QLabel()
-        self.l.setText("This is the first tab")
-        self.tab1.layout.addWidget(self.l)
+        self.instances_form = InstancesForm()
+
+        self.tab1.layout = self.instances_form.main_layout
         self.tab1.setLayout(self.tab1.layout)
 
         self.layout.addWidget(self.tabs)
@@ -54,18 +52,40 @@ class TabWidgets(QWidget):
 class InstancesForm(QDialog):
     def __init__(self):
         super(InstancesForm,self).__init__()
-        pass
+        self.main_layout = QVBoxLayout()
+        self.form_group_box = QGroupBox("Add Instance")
+        self.name_input = QLineEdit()
+        self.dns_input = QLineEdit()
+        self.ip_input = QLineEdit()
+        
+        self.button_box = QPushButton('Add', self)
+        self.button_box.clicked.connect(self.add_instance)
+  
+        self.create_form()
+        self.main_layout.addWidget(self.form_group_box)
+
+    def create_form(self):
+        layout = QFormLayout()
+        layout.addRow(QLabel("Name:"),self.name_input)
+        layout.addRow(QLabel("DNS:"),self.dns_input)
+        layout.addRow(QLabel("IP address:"), self.ip_input)
+        layout.addRow(self.button_box)
+        self.form_group_box.setLayout(layout)
+
+    def add_instance(self):
+        # TODO: CHECK IF NOT EMPTY
+
+        print("Successfully added: \nName: {0}\nDNS: {1}\nIP address: {2}".format(self.name_input.text(),self.dns_input.text(),self.ip_input.text()))
+
 
 class EnvForm(QDialog):
     def __init__(self):
         super(EnvForm,self).__init__()
         pass
-
 class CertsForm(QDialog):
     def __init__(self):
         super(CertsForm,self).__init__()
         pass
-
 class DockerComposeForm(QDialog):
     def __init__(self):
         super(DockerComposeForm,self).__init__()
