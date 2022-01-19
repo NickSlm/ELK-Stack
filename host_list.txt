@@ -1,7 +1,3 @@
-name,dns,ip
-name,dns,ip
-name,dns,ip
-name,dns,ip
-name,dns,ip
-name,dns,ip
-name,dns,ip
+es01,es01,127.0.0.1,es
+es02,es02,127.0.0.1,es
+kib01,kib01,127.0.0.1,kb
