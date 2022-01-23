@@ -17,7 +17,7 @@ def open_file():
 class UI_MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.title = "ELK Configuration files"
+        self.title = "ELK initial configuration files"
         self.WIDTH = 720
         self.HEIGHT = 576
 
@@ -66,6 +66,10 @@ class InstancesForm(QDialog):
         self.form_instance_group_box = QGroupBox("Add host manually")
         self.form_upload_group_box = QGroupBox("Upload hosts file")
         self.instruction_group_box = QGroupBox("Instruction")
+
+        self.msg = QMessageBox()
+        self.msg.setWindowTitle("Configuration Files")
+        self.msg.setText("Files were created successfuly")
 
         self.name_input = QLineEdit()
         self.name_input.setFixedWidth(160)
@@ -140,7 +144,7 @@ class InstancesForm(QDialog):
         img_lb = QLabel()
         img_pixmap = QPixmap(r"D:\ELK docker-compose script\Image\example.JPG")
         img_lb.setPixmap(img_pixmap)
-        instruction_lb = QLabel("* Add all the hosts that will be in the ELK stack.\n   You can add host by host manually or upload a txt/json/csv file\n   with a list of hosts.\n* You can add hosts through file AND manually.\n* If adding through file, file format should look like the image below:")
+        instruction_lb = QLabel("* Add all the hosts that will be in the ELK stack.\n   You can add host by host manually or upload a txt/json/csv file\n   with a list of hosts.\n* You can add hosts through file AND manually.\n* If adding through file, file format should look like the image below.\n* After adding all the hosts press create files and choose your directory.")
         instruction_lb.setWordWrap(True)
         layout.addWidget(instruction_lb)
         layout.addWidget(img_lb)
@@ -167,7 +171,11 @@ class InstancesForm(QDialog):
             self.log_box.addWidget(QLabel(f"- Host: {self.name_input.text()} - {self.ip_input.text()} was successfully added"))
 
     def create_conf_files(self):
-        # directory_path = QtWidgets.QFileDialog.getExistingDirectory(self, 'Select Directory')
-        self.instances_file.create_docker_compose()
-        # if self.progress_bar():
-        #     print("Done")
+        directory_path = QtWidgets.QFileDialog.getExistingDirectory(self, 'Select Directory')
+        self.instances_file.create_docker_compose(directory_path)
+        self.instances_file.create_certs(directory_path)
+        self.instances_file.create_instances_file(directory_path)
+        self.instances_file.create_evn_file(directory_path)
+
+        if self.progress_bar():
+            self.msg.exec_()
