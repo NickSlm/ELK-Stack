@@ -31,7 +31,6 @@ class UI_MainWindow(QMainWindow):
 
         self.show()
 
-
 class TabWidgets(QWidget):
     def __init__(self):
         super(TabWidgets, self).__init__()
@@ -53,7 +52,6 @@ class TabWidgets(QWidget):
         # Create Second tab
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
-
 
 class InstancesForm(QDialog):
     def __init__(self):
@@ -81,7 +79,7 @@ class InstancesForm(QDialog):
         self.ip_input.setFixedWidth(160)
 
         self.type_select = QComboBox()
-        self.type_select.addItems(["Kibana","Elasticsearch"])
+        self.type_select.addItems(["kb","es"])
         self.type_select.setFixedWidth(160)
 
         self.file_lb = QLabel("Choose your hosts file:")
@@ -165,17 +163,15 @@ class InstancesForm(QDialog):
             self.instances_file.add_host_file(file_name)   
             self.log_box.addWidget(QLabel("- Successfully added: {0}".format(file_name)))        
     def add_instance(self):
-        if self.name_input.text() and self.dns_input.text() and self.ip_input.text():
-            host_dict = {"name":self.name_input.text(),"dns":[self.dns_input.text()],"ip":[self.ip_input.text()]}
-            self.instances_file.add_host(host_dict)
+        if self.name_input.text() and self.dns_input.text() and self.type_select.currentText():
+            self.instances_file.add_host(self.name_input.text(),self.dns_input.text(),self.ip_input.text(),self.type_select.currentText())
             self.log_box.addWidget(QLabel(f"- Host: {self.name_input.text()} - {self.ip_input.text()} was successfully added"))
-
     def create_conf_files(self):
         directory_path = QtWidgets.QFileDialog.getExistingDirectory(self, 'Select Directory')
-        self.instances_file.create_docker_compose(directory_path)
         self.instances_file.create_certs(directory_path)
         self.instances_file.create_instances_file(directory_path)
         self.instances_file.create_evn_file(directory_path)
+        self.instances_file.create_docker_compose(directory_path)
 
         if self.progress_bar():
             self.msg.exec_()
