@@ -52,7 +52,7 @@ class Configuration():
 
     def create_docker_compose(self,directory_path):
         self.docker_compose['volumes'].update({f"{self.hosts['elasticsearch'][0]}_data":{'driver':'local'}})
-        # Initial Es node
+        # Initial Elasticsearch node
         self.docker_compose['services'].update(
             {self.hosts['elasticsearch'][0]:
             {
@@ -60,7 +60,7 @@ class Configuration():
             "container_name":self.hosts['elasticsearch'][0],
             "environment":{
                 "node.name":f"{self.hosts['elasticsearch'][0]}",
-                "cluster.name": "es-docker-cluster",
+                "cluster.name":"es-docker-cluster",
                 "discovery.seed_hosts": f"{','.join(self.hosts['elasticsearch'])}",
                 "cluster.initial_master_nodes": f"{','.join(self.hosts['elasticsearch'])}",
                 "bootstrap.memory_lock":"true",
@@ -74,7 +74,7 @@ class Configuration():
                 "xpack.security.transport.ssl.enabled":"true",
                 "xpack.security.transport.ssl.verification_mode":"certificate",
                 "xpack.security.transport.ssl.certificate_authorities":"$CERTS_DIR/ca/ca.crt",
-                "xpack.security.transport.ssl.certificate":f"$CERTS_DIR/{self.hosts_data['instances'][0]['name']}/{self.hosts['elasticsearch'][0]}.crt",
+                "xpack.security.transport.ssl.certificate":f"$CERTS_DIR/{self.hosts['elasticsearch'][0]}/{self.hosts['elasticsearch'][0]}.crt",
                 "xpack.security.transport.ssl.key":f"$CERTS_DIR/{self.hosts['elasticsearch'][0]}/{self.hosts['elasticsearch'][0]}.key",
             },
             "ulimits":{"memlock":{"soft": -1,"hard": -1}},
@@ -97,11 +97,12 @@ class Configuration():
                 "environment":{
                     "node.name":f"{self.hosts['elasticsearch'][es]}",
                     "cluster.name": "es-docker-cluster",
-                    "discovery.seed_hosts": f"{','.join(self.hosts['elasticsearch'][es])}",
-                    "cluster.initial_master_nodes": f"{','.join(self.hosts['elasticsearch'][es])}",
+                    "discovery.seed_hosts": f"{','.join(self.hosts['elasticsearch'])}",
+                    "cluster.initial_master_nodes": f"{','.join(self.hosts['elasticsearch'])}",
                     "bootstrap.memory_lock":"true",
                     "ES_JAVA_OPTS":"-Xms512m -Xmx512m",
                     "xpack.license.self_generated.type":"trial",
+                    "xpack.monitoring.collection.enabled":"true",
                     "xpack.security.enabled":"true",
                     "xpack.security.http.ssl.enabled":"true",
                     "xpack.security.http.ssl.key":f"$CERTS_DIR/{self.hosts['elasticsearch'][es]}/{self.hosts['elasticsearch'][es]}.key",
@@ -116,13 +117,14 @@ class Configuration():
                 "ulimits":{"memlock":{"soft": -1,"hard": -1}},
                 "volumes": [f"{self.hosts['elasticsearch'][es]}_data:/usr/share/elasticsearch/data", "certs:$CERTS_DIR"],
                 "networks":["elastic"]}})
+
         # Kibana nodes
         for kb in range(0,len(self.hosts['kibana'])):
             self.docker_compose['services'].update(
                 {self.hosts['kibana'][kb]:{
                     "image":"docker.elastic.co/kibana/kibana:${VERSION}",
                     "container_name":self.hosts['kibana'][kb],
-                    "depends_on": {self.hosts['kibana'][kb]:{"condition": "service_healthy"}},
+                    "depends_on": {self.hosts['elasticsearch'][0]:{"condition": "service_healthy"}},
                     "ports":["5601:5601"],
                     "environment":{
                         "SERVERNAME": "localhost",
@@ -146,3 +148,6 @@ class Configuration():
         yaml.indent(sequence=4, offset=2)
         with open(fr'{directory_path}\docker-compose.yml', 'w') as file:
             yaml.dump(self.docker_compose, file)
+
+    def create_instruction(self,directory_path):
+        copyfile(r"D:\ELK docker-compose script\instructions.txt",f"{directory_path}\instructions.txt")

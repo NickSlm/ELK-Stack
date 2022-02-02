@@ -1,2 +1,2 @@
 # ELK-Stack Automation
-Easy app to setup TLS enabled ELK Stack
+Easy programm to Generate ELK Stack - TLS configuration files

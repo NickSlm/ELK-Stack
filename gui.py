@@ -24,8 +24,6 @@ class UI_MainWindow(QMainWindow):
         self.setGeometry(500,250,self.WIDTH,self.HEIGHT)
         self.setWindowTitle(self.title)
 
-
-
         self.tab_widget = TabWidgets()
         self.setCentralWidget(self.tab_widget)
 
@@ -172,6 +170,6 @@ class InstancesForm(QDialog):
         self.instances_file.create_instances_file(directory_path)
         self.instances_file.create_evn_file(directory_path)
         self.instances_file.create_docker_compose(directory_path)
-
+        self.instances_file.create_instruction(directory_path)
         if self.progress_bar():
             self.msg.exec_()

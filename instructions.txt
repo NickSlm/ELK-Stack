@@ -1,0 +1,24 @@
+INITIAL SETUP
+
+1. Generate the configuration file using the programm(You can add hosts manually or using a list of hosts).
+2. The programm will generate 4 files:
+    * ".env" - environment variables.
+    * "create-certs.yml" - service which creates certificates for all the hosts.
+    * "instances.yml" - all the hosts for which we create certificates.
+    * "docker-compose.yml" - docker-compose file which configures all the ELK nodes.
+3. To generate all the certificates run the command - "docker-compose -f create-certs.yml --rm create_certs"
+4. Run the docker-compose.yml using the command - "docker-compose up -d"
+5. Make sure all the nodes are running(Keep in mind that kibana CANNOT access elasticsearch nodes at this point).
+6. To configure kibana run the following command on one of the elasticsearch nodes:
+    * Using docker:
+        * linux - docker exec es01 /bin/bash -c "bin/elasticsearch-setup-passwords auto --batch --url https://<nodename>:9200"
+        * windows - docker exec es01 //bin/bash -c "bin/elasticsearch-setup-passwords auto --batch --url https://<nodename>:9200"
+    * Using one of the elasticsearch nodes cli - "bin/elasticsearch-setup-passwords auto"
+7. Once you run the command elasticsearch will generate a list of users and passwords SAVE THEM.
+8. In docker-compose.yml under kibana node change ELASTICSEARCH_PASSWORD to the password generated under kibana_system.
+9. Restart your ELK cluster:
+    1. "docker-compose stop"
+    2. "docker-compose up -d"
+10. Access kibana using your browser, REMEMBER to use HTTPS.
+11. Login using the password generated under elastic at step 7.
+
